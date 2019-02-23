@@ -2,7 +2,7 @@
 """
 Created on Fri Feb 22 16:01:52 2019
 
-@author: yanqi
+@author: Mike S
 """
 import os
 import matplotlib.pyplot as plt
@@ -15,6 +15,9 @@ from sklearn import linear_model
 plt.style.use('ggplot')
 
 def chk_mv(df):
+    '''
+    Prints percentage of missing values per column
+    '''
     mv_bycol = pd.DataFrame( df.isnull().sum(axis=0), columns = ['num_mv'])
     mv_bycol['pct_mv'] = mv_bycol['num_mv']/df.shape[0]
     mv_bycol = mv_bycol.sort_values('num_mv', ascending=False)
@@ -26,6 +29,9 @@ def chk_LotFrontage_nhood(df1):
            sharey = False, sharex = False, height = 3, col_wrap = 3, scatter_kws={'s':8, 'alpha':0.5, 'edgecolor':"black"})   # 
 
 def chk_porch(df1):
+    '''
+    Generates correlation matrix of each different porch feature
+    '''
     df = df1.copy()
     df['Porch'] = df['OpenPorchSF'] + df['EnclosedPorch'] + df['3SsnPorch'] + df['ScreenPorch']
     df['Porch2'] = df['OpenPorchSF'] + df['ScreenPorch']
@@ -42,6 +48,10 @@ def chk_porch(df1):
     print(r1)
 
 def fill_mv_LotFrontage(df,r0):
+    '''
+    Fills in missing lot frontage values using regression where it makes sense
+    and median value otherwise
+    '''
     ols = linear_model.LinearRegression()
     nhoods = df.Neighborhood.unique()
 
@@ -66,10 +76,10 @@ def fill_mv_LotFrontage(df,r0):
                 print("imputed with neighborhood median \n",  df.loc[ mv_idx , ['LotFrontage'] ],"\n" )
     return df
 
-proj_path = 'C:\\Users\\yanqi\\Documents\\NYCDSA\\Python Machine Learning\\Housing Price Prediction\\code'
+proj_path = '/Volumes/michaelsankari/Documents/NYC Data Science/Machine Learning Project'
 os.chdir(proj_path)
 
-raw = pd.read_csv('../data/train.csv')
+raw = pd.read_csv('./data/train.csv')
 #raw = raw.drop('Id',axis=1)
 raw.shape
 pd.set_option('display.max_columns', 90)
