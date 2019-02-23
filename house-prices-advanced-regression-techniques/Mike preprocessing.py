@@ -79,7 +79,20 @@ def fill_mv_LotFrontage(df,r0):
 proj_path = '/Volumes/michaelsankari/Documents/NYC Data Science/Machine Learning Project'
 os.chdir(proj_path)
 
-raw = pd.read_csv('./data/train.csv')
+raw_train = pd.read_csv('./data/train.csv')
+raw_test = pd.read_csv('./data/test.csv')
+
+
+
+raw_train['data_type'] = 'train'
+raw_test['data_type'] = 'test'
+
+#Sale price not in test, so store separately for now and put back after imputation is done
+sale_price = raw_train['SalePrice']
+raw_train.drop('SalePrice', axis=1, inplace=True)
+
+raw = pd.concat((raw_train, raw_test), axis=0)
+
 #raw = raw.drop('Id',axis=1)
 raw.shape
 pd.set_option('display.max_columns', 90)
@@ -141,7 +154,8 @@ modvars['PavedDrive'] = "combined P & N"
 
 # Checked porch vars, best to keep 'WoodDeckSF','OpenPorchSF' and maybe 'ScreenPorch' as separate
 # These 3 vars have corr with SalePrice 0.32, 0.31, 0.11, but low correlation with each other
-chk_porch(df1[ ['WoodDeckSF','OpenPorchSF', 'EnclosedPorch', '3SsnPorch','ScreenPorch','SalePrice'] ])
+#-Mike Note: I removed this since sale price has been removed. Test data doesn't have it.
+#chk_porch(df1[ ['WoodDeckSF','OpenPorchSF', 'EnclosedPorch', '3SsnPorch','ScreenPorch','SalePrice'] ])
 
 # PoolQC: convert to binary 0 = No pool, 1 = has pool
 print(df1['PoolQC'].value_counts())
@@ -173,7 +187,10 @@ for con in allcon:
     df1.loc[ (df1['Condition1'] == con) | (df1['Condition2'] == con) , [con] ] = 1
     newvars.append(con)
     print(df1[con].value_counts(),"\n")
-    
+
+#That's it for imputing, see how it looks
+chk_mv(df1)
+
 # based on boxplots, we may be able to combine (PosA,PosN), (RRAe,RRAn,RRNe,RRNn). 
 # RRNn is a bit strange, has higher median price than "Norm" group, but only 7 houses
     
