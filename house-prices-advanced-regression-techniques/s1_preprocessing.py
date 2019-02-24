@@ -4,6 +4,18 @@ Created on Fri Feb 22 16:01:52 2019
 
 @author: yanqi
 """
+
+# This file works on the raw input data and perform the following
+# 1. Imputation: (see impvars)
+#    - convert NA to "None" where makes sense
+#    - customized imputation for some vars 
+# 2. Modification: combine categories etc (see modvars)
+# 3. Create new features: (see newvars)
+# 4. Drop variables: (see dropvars)
+# 5. Creates a few output csv files for analyses
+#   - clean_fulldata.csv: output after steps 1-3
+#   - clean_reducedata.csv: output after steps 1-4
+
 import os
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -62,11 +74,11 @@ def fill_mv_LotFrontage(df,r0):
                 df.loc[ mv_idx , ['LotFrontage'] ] = ols.predict( np.array(df.loc[mv_idx, 'LotArea' ]).reshape(-1,1) )
                 print("imputed with regression \n", df.loc[ mv_idx , ['LotFrontage'] ],"\n" )
             else:
-                df.loc[ mv_idx , ['LotFrontage'] ] = np.median(X)
+                df.loc[ mv_idx , ['LotFrontage'] ] = np.median(Y)
                 print("imputed with neighborhood median \n",  df.loc[ mv_idx , ['LotFrontage'] ],"\n" )
     return df
 
-proj_path = 'C:\\Users\\yanqi\\Documents\\NYCDSA\\Python Machine Learning\\Housing Price Prediction\\code'
+proj_path = 'C:\\Users\\yanqi\\Documents\\NYCDSA\\Python Machine Learning\\Housing Price Prediction\\house_price_prediction\\code'
 os.chdir(proj_path)
 
 raw = pd.read_csv('../data/train.csv')
@@ -79,6 +91,7 @@ raw.head()
 newvars = []  # new variables created
 impvars = dict()  # variables imputed
 modvars = dict()  # other changes to variables, such as combining categories
+dropvars = dict()
 
 chk_mv(raw)
 
@@ -111,6 +124,8 @@ chk_mv(df1)
 df1['Age'] = df1['YrSold'] - df1['YearBuilt']
 df1['Re_Age'] = df1['YrSold'] - df1['YearRemodAdd']
 newvars.extend(['Age','Re_Age']) 
+dropvars['YearRemodAdd'] = 1
+dropvars['YearBuilt'] = 1
 
 # Create 2 new bath variables from 4 original bath variables
 df1['TotalFullBath'] = df1['FullBath'] + df1['BsmtFullBath']
@@ -151,6 +166,7 @@ df1.loc[ (df1['MoSold'] >= 9) & (df1['MoSold'] <= 11), 'SeasonSold' ] = "Fall"
 df1.loc[ (df1['MoSold'] == 12) | (df1['MoSold'] <= 2), 'SeasonSold' ] = "Winter"
 df1['SeasonSold'].value_counts()
 newvars.append('SeasonSold')
+dropvars['MoSold'] = 1
 
 # Create new variables from Condition1 and Condition2
 print(df1['Condition1'].value_counts())
@@ -163,15 +179,39 @@ for con in allcon:
     df1.loc[ (df1['Condition1'] == con) | (df1['Condition2'] == con) , [con] ] = 1
     newvars.append(con)
     print(df1[con].value_counts(),"\n")
+dropvars['Norm'] = 1 # we do not need the Norm condition
     
 # based on boxplots, we may be able to combine (PosA,PosN), (RRAe,RRAn,RRNe,RRNn). 
 # RRNn is a bit strange, has higher median price than "Norm" group, but only 7 houses
     
 # log transform response variable to make it normally distributed
 df1['LogSalePrice'] = np.log(df1['SalePrice'])
+dropvars['SalePrice'] = 1
 
 # remove 2 outliers 
 outliers = df1[ (df1['GrLivArea'] > 4000) & (df1['LogSalePrice'] < 13) ].index
-df1 = df1.drop(outliers,axis=0)
+df1.drop(outliers,axis=0, inplace=True)
 
-# Next: drop variables, 
+# write this dataset to csv
+outfname1 = "../results/s1_clean_fulldata.csv"
+df1.to_csv(outfname1, index = False)
+
+# Next: drop variables, specified in csv file
+
+varinfo = pd.read_csv('../data/2019-02-22 var_initial_selection_v2.csv')
+for i, v in enumerate(varinfo.VariableName):
+    if (v != "Index") & (varinfo.Keep_round1[i] == 0 ):
+        dropvars[v] = 1
+
+
+print(df1.shape[1])        
+for k in dropvars.keys():
+    df1.drop(k,axis = 1, inplace = True)  
+    
+print(df1.shape[1])    
+
+# save to csv file for models that do not require dummification
+outfname2 = "../results/s1_clean_reducedata.csv"
+df1.to_csv(outfname2, index = False)
+
+
