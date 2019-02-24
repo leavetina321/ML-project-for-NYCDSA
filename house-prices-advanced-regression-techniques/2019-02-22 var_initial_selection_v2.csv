@@ -1,0 +1,82 @@
+VariableIndex,DataType,VariableName,Action,Keep_round1
+0,Index,Id,none,1
+1,cat,MSSubClass,dropped,0
+2,cat,MSZoning,checked,1
+3,cont,LotFrontage,"By neighborhood, if regression on LotArea has R^2>0.5, impute by regression. Otherwise, impute by neighborhood median LotFrontage",1
+4,cont,LotArea,checked,1
+5,cat,Street,"Need to discuss whether to keep (6 gravel, rest paved)",1
+6,cat,Alley,dropped,0
+7,cat,LotShape,checked and decided to keep as categorical,1
+8,cat,LandContour,decided on cat,1
+9,cat,Utilities,decided to drop,0
+10,cat,LotConfig,decided to keep for now,1
+11,cat,LandSlope,keep for now,1
+12,cat,Neighborhood,potentially combine small neighborhoods,1
+13,cat,Condition1,"together with Condition2, dummify into 8 columns (without ""Normal"")",0
+14,cat,Condition2,"together with Condition2, dummify into 8 columns (without ""Normal"")",0
+15,cat,BldgType,"to dummify, team to each pick BldgType or HouseStyle",1
+16,cat,HouseStyle,"to dummify, team to each pick BldgType or HouseStyle",1
+17,ord,OverallQual,"keep, already numeric values",1
+18,ord,OverallCond,to drop,0
+19,cont,YearBuilt,created Age = YrSold - YearBuilt,1
+20,cont,YearRemodAdd,created Re-Age = YrSold - YearRemodAdd,1
+21,cat,RoofStyle,checked (free to drop or keep),0
+22,cat,RoofMatl,checked (free to drop or keep),0
+23,cat,Exterior1st,to dummify,1
+24,cat,Exterior2nd,to drop,0
+25,cat,MasVnrType,to drop,0
+26,cont,MasVnrArea,to drop,0
+27,ord or cat,ExterQual,keep,1
+28,ord,ExterCond,to drop,0
+29,cat,Foundation,checked,1
+30,ord or cat?,BsmtQual,"NA replaced by None, To decide if to transform to numeric (ordinal)",1
+31,cat,BsmtCond,"NA replaced by None, keeping and treat as categorical",1
+32,cat,BsmtExposure,keep based on boxplot observations,1
+33,cat,BsmtFinType1,to drop,0
+34,cont,BsmtFinSF1,to drop,0
+35,ord,BsmtFinType2,to drop,0
+36,cont,BsmtFinSF2,to drop,0
+37,cont,BsmtUnfSF,to drop,0
+38,cont,TotalBsmtSF,keep,1
+39,cat,Heating,to drop,0
+40,ord or cat,HeatingQC,keep,1
+41,cat,CentralAir,keep,1
+42,cat,Electrical,to drop,0
+43,cont,1stFlrSF,dropped,0
+44,cont,2ndFlrSF,dropped,0
+45,cont,LowQualFinSF,to drop,0
+46,cont,GrLivArea,checked,1
+47,cont,BsmtFullBath,"Combine with FullBath as TotalFullBath, then drop",0
+48,cont,BsmtHalfBath,"Combine with HalfBath as TotalHalfBath, then drop",0
+49,cont,FullBath,"Combine with FullBath as TotalFullBath, then drop",0
+50,cont,HalfBath,"Combine with HalfBath as TotalHalfBath, then drop",0
+51,cont,BedroomAbvGr,to drop,0
+52,cont,KitchenAbvGr,to drop,0
+53,ord or cat,KitchenQual,keep,1
+54,cont,TotRmsAbvGrd,keep,1
+55,cat,Functional,change to two categories (Typ or NonTyp),1
+56,cont,Fireplaces,to drop,0
+57,ord or cat,FireplaceQu,"NA replaced by None, keep",1
+58,cat,GarageType,"NA replaced by None, keep",1
+59,cont,GarageYrBlt,dropped,0
+60,ord,GarageFinish,to drop,0
+61,cont,GarageCars,keep,1
+62,cont,GarageArea,to drop,0
+63,ord,GarageQual,to drop,0
+64,ord,GarageCond,to drop,0
+65,cat,PavedDrive,combine P and N,1
+66,cont,WoodDeckSF,checked,1
+67,cont,OpenPorchSF,Keep,1
+68,cont,EnclosedPorch,to drop,0
+69,cont,3SsnPorch,to drop,0
+70,cont,ScreenPorch,Keep,1
+71,cont,PoolArea,dropped,0
+72,cat,PoolQC,convert to Yes or No,1
+73,cat,Fence,NA replaced by None,1
+74,cat,MiscFeature,dropped,0
+75,cont,MiscVal,checked,1
+76,cat,MoSold,convert to 4 seasons,1
+77,cont,YrSold,to drop,0
+78,cat,SaleType,to drop,0
+79,cat,SaleCondition,keep,1
+80,cont,SalePrice,Log Transform Price,1
