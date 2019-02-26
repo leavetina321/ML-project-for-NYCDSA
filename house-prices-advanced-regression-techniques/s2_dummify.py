@@ -11,7 +11,7 @@ import pandas as pd
 proj_path = 'C:\\Users\\yanqi\\Documents\\NYCDSA\\Python Machine Learning\\Housing Price Prediction\\house_price_prediction\\code'
 os.chdir(proj_path)
 
-infname = "../results/s1_clean_reducedata.csv"
+infname = "../results/s1_clean_reducedata_test.csv"
 df = pd.read_csv(infname)
 
 # Figure out which columns need to be dummified
@@ -36,5 +36,5 @@ df.drop(cat_cols,axis=1,inplace=True)
 
 df = pd.concat([df,df_dummy],axis=1)
 
-outfname = "../results/s2_clean_dummified.csv"
+outfname = "../results/s2_clean_dummified_test.csv"
 df.to_csv(outfname, index = False)
