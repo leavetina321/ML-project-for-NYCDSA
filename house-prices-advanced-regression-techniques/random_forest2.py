@@ -18,11 +18,12 @@ from sklearn.model_selection import GridSearchCV
 le = preprocessing.LabelEncoder()
 from sklearn.model_selection import train_test_split
 import pickle
+import os
 
+os.chdir('/Users/michaelsankari/Documents/NYC Data Science/Machine Learning Project/github/ML-project-for-NYCDSA/house-prices-advanced-regression-techniques')
 
-
-train=pd.read_csv('traindata_full_dummified.csv')
-test=pd.read_csv("testdata_full_dummified.csv")
+train=pd.read_csv('./cleandata/traindata_full_dummified.csv')
+test=pd.read_csv("./cleandata/testdata_full_dummified.csv")
 ### drop outliers
 def find_outliers(df,col):
     mean = np.mean(df[col], axis=0)
@@ -85,6 +86,9 @@ fea_i=pd.DataFrame({'name':name,'score':score})
 fea_i[:10].plot.bar(x='name', y='score')
 fea_i
 
+my_fig = fea_i[:10].plot.bar(x='name', y='score')
+my_fig.tick_params(labelsize=14)
+my_fig.figure.savefig('my_fig.png', dpi=300, bbox_inches = 'tight')
 
 ### output predict model score 
 predictscore=pd.DataFrame(model.predict(x_test),columns=['SalePrice'])

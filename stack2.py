@@ -5,7 +5,7 @@ Created on Fri Mar  1 17:59:30 2019
 
 @author: michaelsankari
 """
-
+import os
 from mlxtend.regressor import StackingRegressor
 from mlxtend.data import boston_housing_data
 from sklearn.linear_model import LinearRegression
@@ -13,11 +13,10 @@ from sklearn.linear_model import Ridge
 from sklearn.svm import SVR
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import Lasso
-from sklearn import ensemble
-from sklearn import preprocessing
-from sklearn import utils
+import pickle
 
 def load_train():
     '''
@@ -25,7 +24,7 @@ def load_train():
     and does transformations on price.
     Returns raw, the final data set for the features and sale_price, the final dependent variable
     '''
-    os.chdir('/Volumes/michaelsankari/Documents/NYC Data Science/Machine Learning Project/github/ML-project-for-NYCDSA')
+    os.chdir('/Users/michaelsankari/Documents/NYC Data Science/Machine Learning Project/github/ML-project-for-NYCDSA')
     raw = pd.read_csv("./house-prices-advanced-regression-techniques/cleandata/s2_clean_dummified.csv")
     
     outliers = raw[ (raw['GrLivArea'] > 4000) & (raw['LogSalePrice'] < 13) ].index
@@ -45,7 +44,7 @@ def load_test():
     Returns a data frame of cleaned test data
     '''
     
-    raw_test = pd.read_csv("./house-prices-advanced-regression-techniques/cleandata/s2_clean_dummified_test.csv")
+    raw_test = pd.read_csv(".//house-prices-advanced-regression-techniques/cleandata/s2_clean_dummified_test.csv")
     test_IDs = raw_test['Id']
     test_IDs = pd.DataFrame(test_IDs)
     raw_test.drop(['Id', 'Exterior1st_Other'], axis = 1, inplace = True)
@@ -57,54 +56,30 @@ raw, sale_price = load_train()
 X = raw.copy()
 Y = sale_price.copy()
 
-lab_enc = preprocessing.LabelEncoder()
-Y = lab_enc.fit_transform(Y)
-
-
 lr = LinearRegression()
-lasso = Lasso()
-ridge = Ridge()
-randomForest = ensemble.RandomForestClassifier()
+ridge = Ridge(random_state=1)
+svr_rbf = SVR(kernel='rbf')
 
-#Single stack, no grid search
-stregr = StackingRegressor(regressors=[lr, lasso, ridge, randomForest], 
-                           meta_regressor=randomForest, verbose=2)
+stregr = StackingRegressor(regressors=[lr, ridge], 
+                           meta_regressor=svr_rbf)
 
 # Training the stacking classifier
 
 stregr.fit(X, Y)
 stregr.predict(X)
 
-# Evaluate the fit
+# Evaluate and visualize the fit
 
 print("Mean Squared Error: %.4f"
       % np.mean((stregr.predict(X) - Y) ** 2))
 print('Variance Score: %.4f' % stregr.score(X, Y))
 
-
-#Grid search with stack
-params = {'lasso__alpha': [-7, -2, 50],
-          'ridge__alpha': [0,10,50],
-          'randomforestclassifier__n_estimators': [25, 50, 100],
-          'randomforestclassifier__min_samples_leaf': range(1, 10),
-          'randomforestclassifier__min_samples_leaf': np.linspace(start=2, stop=30, num=15, dtype=int)
-}
-
-grid = GridSearchCV(estimator=stregr, 
-                    param_grid=params, 
-                    cv=5,
-                    refit=True)
-grid.fit(X, Y)
-
-# Evaluate the fit
-print("Mean Squared Error: %.4f"
-      % np.mean((grid.predict(X) - Y) ** 2))
-print('Variance Score: %.4f' % grid.score(X, Y))
+pickle.dump(stregr, open('stack-3-1-19.sav', 'wb'))
 
 raw_test, test_IDs = load_test()
-predict = grid.predict(raw_test)
+predict = stregr.predict(raw_test)
 predict = np.exp(predict)
 predict = pd.DataFrame(predict)
 predict = pd.concat([test_IDs, predict], axis = 1)
 predict.columns = ['Id', 'SalePrice']
-predict.to_csv('stack_grid.csv', index=False)
+predict.to_csv('stack-3-1-19.csv', index=False)
