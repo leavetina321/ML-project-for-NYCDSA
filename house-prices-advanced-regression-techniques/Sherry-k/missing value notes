@@ -1,0 +1,41 @@
+missing value notes
+
+LotFrontage : 259 missing values - need to be imputed through potentially lot size/ square footage
+				
+
+Alley: 1369 missing values - NA values can be replaced by None
+
+MasVnrType: 8 - can possibly put None or can try to impute from other factors
+
+MasVnrArea: 8 - related to MasVnrType but can potentially impute based on the decision we make
+
+BsmtQual: 37 missing values - NA values should be replaced by None
+
+BsmtCond: 37 missing values - NA values should be replaced by None
+
+BsmtExposure: 38 missing values - NA values should be replaced by None (except for the one extra NA, can be studied more)
+
+BsmtFinType1: 37 missing values - NA values should be replaced by None
+
+BsmtFinType2: 38 missing values - NA values should be replaced by None (except for the one extra NA, can be studied more)
+
+Electrical: 1 missing values - missing totally at random. should be able to impute
+
+FireplaceQu: 690 missing values - NA values should be replaced by None
+
+GarageType: 81 missing values - NA values should be replaced by None
+
+GarageYrBlt: 81 missing values - NA values should be replaced by None
+
+GarageFinish: 81 missing values - NA values should be replaced by None
+
+GarageQual: 81 missing values - NA values should be replaced by None
+
+GarageCond: 81 missing values - NA values should be replaced by None
+
+PoolQC: 1453 missing values - NA values should be replaced by None (only 7 pools in the entire list)
+
+Fence: 1179 missing values - NA values should be replaced by None
+
+MiscFeature: 1406 missing values - NA values should be replaced by None (instead of this column we can just use the MiscVal column )
+
